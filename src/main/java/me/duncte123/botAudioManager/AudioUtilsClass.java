@@ -28,7 +28,9 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 
 public interface AudioUtilsClass {
 
-    AudioUtilsClass getInstance();
+    static AudioUtilsClass getInstance() {
+        return null;
+    }
 
     AudioPlayerManager getPlayerManager();
 }

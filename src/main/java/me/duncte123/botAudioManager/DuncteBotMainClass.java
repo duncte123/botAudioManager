@@ -29,7 +29,9 @@ import net.dv8tion.jda.core.JDA;
 
 public interface DuncteBotMainClass {
 
-    DuncteBotMainClass getInstance();
+    static DuncteBotMainClass getInstance() {
+        return null;
+    }
 
     default ShardManager getShardManager() {
         return null;
