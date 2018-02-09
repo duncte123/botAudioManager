@@ -54,14 +54,18 @@ public class LavalinkManager {
     public static final LavalinkManager ins = new LavalinkManager();
 
     private Config config = null;
+    private DuncteBotMainClass mainClass = null;
+    private AudioUtilsClass audioUtilsClass = null;
 
     private LavalinkManager() {
     }
 
     private Lavalink lavalink = null;
 
-    public void start(Config config) {
+    public void start(DuncteBotMainClass mainClass, AudioUtilsClass audioUtilsClass, Config config) {
         this.config = config;
+        this.mainClass = mainClass;
+        this.audioUtilsClass = audioUtilsClass;
         if (!isEnabled()) return;
 
         String userId = getIdFromToken(this.config.getString("discord.token"));
@@ -69,9 +73,9 @@ public class LavalinkManager {
         lavalink = new Lavalink(
                 userId,
                 this.config.getInt("discord.totalShards", 1),
-                shardId -> DuncteBotMainClass.getInstance().getBotType().equals(BotType.SHARDMANAGER) ?
-                        DuncteBotMainClass.getInstance().getShardManager().getShardById(shardId) :
-                        DuncteBotMainClass.getInstance().getFakeOneShard(shardId)
+                shardId -> this.mainClass.getBotType().equals(BotType.SHARDMANAGER) ?
+                        this.mainClass.getShardManager().getShardById(shardId) :
+                        this.mainClass.getFakeOneShard(shardId)
         );
         List<LavalinkNode> defaultNodes = new ArrayList<>();
         defaultNodes.add(new LavalinkNode(new Ason("{\"wsurl\": \"ws://localhost\",\"pass\": \"youshallnotpass\"}")));
@@ -82,15 +86,6 @@ public class LavalinkManager {
         nodeList.forEach(it ->
                 lavalink.addNode(it.getWsURI(), it.getPass())
         );
-
-        /*try {
-            lavalink.addNode(
-                    new URI(AirUtils.config.getString("lavalink.wsurl", "ws://localhost")),
-                    AirUtils.config.getString("lavalink.pass", "youshalnotpass")
-            );
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }*/
     }
 
     public boolean isEnabled() {
@@ -100,7 +95,7 @@ public class LavalinkManager {
     public IPlayer createPlayer(String guildId) {
         return isEnabled()
                 ? lavalink.getLink(guildId).getPlayer()
-                : new LavaplayerPlayerWrapper(AudioUtilsClass.getInstance().getPlayerManager().createPlayer());
+                : new LavaplayerPlayerWrapper(this.audioUtilsClass.getPlayerManager().createPlayer());
     }
 
     public void openConnection(VoiceChannel channel) {
