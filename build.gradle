@@ -33,7 +33,6 @@ javadoc {
     options.author()
     options.encoding = 'UTF-8'
     options.addStringOption('-html5')
-    exclude('me/duncte123/weebJava/models/impl')
 }
 
 compileJava {
