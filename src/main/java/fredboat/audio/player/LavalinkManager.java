@@ -53,19 +53,15 @@ public class LavalinkManager {
 
     public static final LavalinkManager ins = new LavalinkManager();
 
-    private DuncteBotMainClass mainClass = null;
     private Config config = null;
-    private AudioUtilsClass audioUtilsClass;
 
     private LavalinkManager() {
     }
 
     private Lavalink lavalink = null;
 
-    public void start(DuncteBotMainClass mainClass, Config config, AudioUtilsClass audioUtilsClass) {
-        this.mainClass = mainClass;
+    public void start(Config config) {
         this.config = config;
-        this.audioUtilsClass = audioUtilsClass;
         if (!isEnabled()) return;
 
         String userId = getIdFromToken(this.config.getString("discord.token"));
@@ -73,8 +69,9 @@ public class LavalinkManager {
         lavalink = new Lavalink(
                 userId,
                 this.config.getInt("discord.totalShards", 1),
-                shardId -> this.mainClass.getBotType().equals(BotType.SHARDMANAGER) ?
-                        this.mainClass.getShardManager().getShardById(shardId) : this.mainClass.getFakeOneShard(shardId)
+                shardId -> DuncteBotMainClass.getInstance().getBotType().equals(BotType.SHARDMANAGER) ?
+                        DuncteBotMainClass.getInstance().getShardManager().getShardById(shardId) :
+                        DuncteBotMainClass.getInstance().getFakeOneShard(shardId)
         );
         List<LavalinkNode> defaultNodes = new ArrayList<>();
         defaultNodes.add(new LavalinkNode(new Ason("{\"wsurl\": \"ws://localhost\",\"pass\": \"youshallnotpass\"}")));
@@ -103,7 +100,7 @@ public class LavalinkManager {
     public IPlayer createPlayer(String guildId) {
         return isEnabled()
                 ? lavalink.getLink(guildId).getPlayer()
-                : new LavaplayerPlayerWrapper(audioUtilsClass.getInstance().getPlayerManager().createPlayer());
+                : new LavaplayerPlayerWrapper(AudioUtilsClass.getInstance().getPlayerManager().createPlayer());
     }
 
     public void openConnection(VoiceChannel channel) {
