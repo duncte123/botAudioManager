@@ -46,6 +46,7 @@ repositories {
 }
 
 dependencies {
+    compile group: 'com.afollestad', name: 'ason', version: '1.4.16'
     compile(group: 'com.github.Frederikam', name: 'Lavalink', version: 'fa6f096') {
         exclude group: 'com.github.Frederikam.Lavalink', module: 'Lavalink-Server'
     }
