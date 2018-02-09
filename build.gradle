@@ -1,0 +1,76 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'maven-publish'
+    id 'maven'
+}
+
+group = "ml.duncte123"
+archivesBaseName = "botAudioManager"
+version = "0.1.0"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    jcenter()
+
+    maven {
+        name 'jitpack'
+        url 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    compile(group: 'com.github.Frederikam', name: 'Lavalink', version: 'fa6f096') {
+        exclude group: 'com.github.Frederikam.Lavalink', module: 'Lavalink-Server'
+    }
+}
+
+javadoc {
+    failOnError = false
+    options.memberLevel = JavadocMemberLevel.PUBLIC
+    options.author()
+    options.encoding = 'UTF-8'
+    options.addStringOption('-html5')
+    exclude('me/duncte123/weebJava/models/impl')
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from "$buildDir/sources"
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        MavenProject(MavenPublication) {
+            from components.java
+            groupId group
+            artifactId archivesBaseName
+            version = version
+
+            artifact javadocJar
+            artifact sourcesJar
+        }
+    }
+}
+
+build {
+    dependsOn clean
+    dependsOn jar
+    dependsOn javadocJar
+    dependsOn sourcesJar
+
+    jar.mustRunAfter clean
+    javadocJar.mustRunAfter jar
+    sourcesJar.mustRunAfter javadocJar
+}
